@@ -41,7 +41,7 @@ h_xy = -sum(sum(b.*(log2(b+(b==0))))); % joint entropy
 
 if method=='Normalized';
 h = (Hx + Hy)/h_xy;% Mutual information
-else
+elseif method=='Non-Normalized'
 h = Hx + Hy - h_xy;% Mutual information
 
 end
