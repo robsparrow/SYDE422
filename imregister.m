@@ -14,24 +14,28 @@ clear; close all; clc;
 
 % Load original image
 original = imread('test.png');
+original = uint8(original);
 
 % Setup transformations
 scale = 0; %70% of original image size
-theta = 60; %30 degree rotation counterclockwise
-yTrans = 70; %y translation defined in pixels
-xTrans = 70; %x translation defined in pixels
+theta = 20; %30 degree rotation counterclockwise
+yTrans = 0; %y translation defined in pixels
+xTrans = 0; %x translation defined in pixels
 
 %Apply all transformations to the image
 [distorted, sample, xdata,ydata] = imretrieve(original, xTrans, yTrans, scale, theta);
 
-%Find mutual information
-mi=momi(original, distorted, 'Normalized');
+%Find similarity of the two images using a number of criterion
+mutualInformation=momi(original, distorted, 'Normalized');
+error = rmse(double(original), double(distorted));
 
 %Show original and transformed images for comparison, then an overlay
 figure, imshow(original);
 title('Original');
 figure, imshow(sample);
 title('Sample Distortion');
+figure, imshow(distorted);
+title('Distortion');
 imshowpair(original, distorted,'Scaling','joint');
 title('Overlay');
 
