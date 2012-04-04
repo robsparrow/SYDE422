@@ -22,17 +22,35 @@ function [distorted, sample, xdata, ydata] = imretrieve(img, xTrans, yTrans, sca
     %Apply all transformations to the image
     tformTranslate = maketform('affine',translationMatrix);
     [translated xdata ydata]= imtransform(img, tformTranslate);
-    scaled = imresize(translated, scale);
-    rotated = imrotate(scaled,theta);
-    distorted = rotated;
-    
-    
+    distorted = translated;
+    if scale ~=0
+        scaled = imresize(translated, scale);
+        distorted = scaled;
+        if theta ~=0
+            rotated = imrotate(scaled,theta);
+            distorted = rotated;
+        end    
+    elseif theta ~=0
+            rotated = imrotate(translated,theta);
+            distorted = rotated;
+    end
+ 
     %Prepare sample of image transformation for display
     %Note: Not for processing
     transSample = imtransform(translated, tformTranslate,...
                             'XData', [1 (size(img,2)+ xTrans)],...
                             'YData', [1 (size(img,1)+ yTrans)]);
+    sample = transSample;
+    if scale ~=0
     scaledSample = imresize(transSample, scale);
-    rotatedSample = imrotate(scaledSample,theta);
-    sample = rotatedSample;
+    sample = scaledSample;
+        if theta ~=0
+            rotatedSample = imrotate(scaledSample,theta);
+            sample = rotatedSample;
+        end    
+    elseif theta ~=0
+        rotatedSample = imrotate(transSample,theta);
+        sample = rotatedSample;
+    end
+    
 end

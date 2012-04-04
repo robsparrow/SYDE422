@@ -1,4 +1,4 @@
-clear all; clc;
+clear; close all; clc;
 
 %===============================================================================
 % Title: Evolutionary Image Registration for Mosaicing of Remotely Sensed Images
@@ -7,7 +7,7 @@ clear all; clc;
 %===============================================================================
  
 %-------------------------------------------------------------------------------
-% Part X: Traditional Method
+% Part 1: Traditional Method
 % Adapted from:
 % http://www.mathworks.com/help/toolbox/images/ref/imregconfig.html
 %-------------------------------------------------------------------------------
@@ -16,13 +16,16 @@ clear all; clc;
 original = imread('test.png');
 
 % Setup transformations
-scale = 0.7; %70% of original image size
-theta = 30; %30 degree rotation counterclockwise
-yTrans = 20; %y translation defined in pixels
-xTrans = 20; %x translation defined in pixels
+scale = 0; %70% of original image size
+theta = 60; %30 degree rotation counterclockwise
+yTrans = 70; %y translation defined in pixels
+xTrans = 70; %x translation defined in pixels
 
 %Apply all transformations to the image
 [distorted, sample, xdata,ydata] = imretrieve(original, xTrans, yTrans, scale, theta);
+
+%Find mutual information
+mi=momi(original, distorted, 'Normalized');
 
 %Show original and transformed images for comparison, then an overlay
 figure, imshow(original);
