@@ -15,10 +15,24 @@ clear all; clc;
 % Load original image
 original = imread('test.png');
 
-% Apply some set of affine transforms to the image
+% Setup transformations
 scale = 0.7; %70% of original image size
 theta = 30; %30 degree rotation counterclockwise
-scaled = imresize(original, scale);
+
+%Setup a transformation matrix with x and y cooridnate translation
+yTrans = 20; %y translation defined in pixels
+xTrans = 20; %x translation defined in pixels
+translationMatrix = zeros(3,3);
+translationMatrix(1,1)=1;
+translationMatrix(2,2)=1;
+translationMatrix(3,3)=1;
+translationMatrix(3,1)=xTrans;
+translationMatrix(3,2)=yTrams;
+
+%Apply all transformations to the image
+tformTranslate = maketform('affine',translationMatrix);
+[translated xdata ydata]= imtransform(original, tformTranslate);
+scaled = imresize(translated, scale);
 rotated = imrotate(scaled,theta);
 distorted = rotated;
 
@@ -30,13 +44,14 @@ title('Distorted');
 imshowpair(original, distorted,'Scaling','joint');
 title('Overlay');
 
-%Create the optimizer, monomodal because images are same spectrum
-%Create Metric based on Mattes Mutual Information
-optimizer = imregconfig('monomodal');
+%Create the optimizer, using a regular gradient descent method
+%Create the metric based on Mattes Mutual Information
+optimizer = registration.optimizer.RegularStepGradientDescent;
 metric = registration.metric.MattesMutualInformation();
 
-%Perform the registration
-imgRegistered = imregister(distorted,original,'affine',optimizer, metric);
+%Perform the registration, and show results of using Matte's Mutual
+%Information
+imgRegistered = imregister(distorted,original,'affine',optimizer, metric,'DisplayOptimization',true);
 
 %Show the result of the registration as the registered image and then as an
 %overlay with the original
