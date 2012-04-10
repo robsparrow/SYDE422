@@ -1,0 +1,36 @@
+%==========================================================================
+% Title: Evolutionary Image Registration for Mosaicing of Remotely Sensed 
+% Images
+% Author: Rob Sparrow, Systes Design Engineering, University of Waterloo
+% April 4th, 2012
+%==========================================================================
+ 
+%--------------------------------------------------------------------------
+% Part X: Maximization of Mutual Information Calculation for Two Images
+
+% Adapted from:
+% http://www.mathworks.com/matlabcentral/fileexchange/19086
+
+% Mutual information joint entropy matrix is computed using the Hanning
+% windowed sinc function as the kernel of interpolation, which is the HPV
+% estimation method [1].  
+%
+% Maximization of the joint entropy matrix is carried out using Powel's
+% Direction set method [2] with original c-code very slightly modified from
+% J.P. Moreau's code[3].  
+%
+% [1] Lu X, et al., Mutual information-based multimodal image registration
+% using a novel joint histogram estimation, Comput Med Imaging Graph
+% (2008), doi: 10.1016/j.compmedimag.2007.12.001
+%
+% [2] Numerical Recipes, The Art of Scientific Computing By W.H. Press, 
+% B.P. Flannery, S.A. Teukolsky and W.T. Vetterling, Cambridge University 
+% Press, 1986
+%
+% [3] http://pagesperso-orange.fr/jean-pierre.moreau/Cplus/tpowell_cpp.txt
+%--------------------------------------------------------------------------
+
+function [parameters] = momi(original, distorted)
+
+
+end
