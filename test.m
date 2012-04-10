@@ -11,5 +11,7 @@ clear all; clc;
 %-------------------------------------------------------------------------------
 
 % Load original image
-original = imread('test.png');
-mi=momi(original, original, 'Normalized');
+targetFolder = 'Samples';
+original = '1_small.tif';
+original = strcat(targetFolder, '\', original);
+original = imread(original);

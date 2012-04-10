@@ -11,21 +11,24 @@ clear all; clc;
 %-------------------------------------------------------------------------------
 
 % Load original image
-original = imread('test.png');
+targetFolder = 'Samples';
+original = '4.png';
+original = strcat(targetFolder, '\', original);
+original = imread(original);
+original = rgb2gray(original);
 
 % Setup transformations
-scale = 0.7; %70% of original image size
-theta = 30; %30 degree rotation counterclockwise
+scale = 1; % % of original image size
+theta = 10; % degree rotation counterclockwise
 yTrans = 20; %y translation defined in pixels
 xTrans = 20; %x translation defined in pixels
 
 %Apply all transformations to the image
-[distorted, sample, xdata,ydata] = imretrieve(original, xTrans, yTrans, scale, theta);
+%[distorted, sample, xdata,ydata] = imretrieve(original, xTrans, yTrans, scale, theta);
+distorted = im_rst(original, scale, theta, xTrans, yTrans);
+
+momi=momi(original, distorted, 'Normalized');
 
 %Show original and transformed images for comparison, then an overlay
-figure, imshow(original);
-title('Original');
-figure, imshow(sample);
-title('Sample Distortion');
-imshowpair(original, distorted,'Scaling','joint');
-title('Overlay');
+figure(1),subplot(2,1,1),imshow(original),title('Original')
+subplot(2,1,2),imshow(distorted),title('Distorted')

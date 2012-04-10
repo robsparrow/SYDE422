@@ -18,7 +18,7 @@ original = uint8(original);
 
 % Setup transformations
 scale = 0; %70% of original image size
-theta = 20; %30 degree rotation counterclockwise
+theta = 0; %30 degree rotation counterclockwise
 yTrans = 0; %y translation defined in pixels
 xTrans = 0; %x translation defined in pixels
 
