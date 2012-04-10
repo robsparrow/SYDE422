@@ -10,13 +10,14 @@ distorted = strcat(targetFolder, '\', distorted);
 distorted = imread(distorted);
 
 % Setup transformations
-scale = x(1); % % of original image size
-theta = x(2); % degree rotation counterclockwise
-yTrans = x(3); %y translation defined in pixels
-xTrans = x(4); %x translation defined in pixels
+scale = 0; %x(1); % % of original image size
+theta = x(1); % degree rotation counterclockwise
+xTrans = 0; %x(3); %x translation defined in pixels
+yTrans = 0; %x(4); %y translation defined in pixels
 
 %Apply a set of transformations to the distorted image
-distorted = im_rst(distorted, scale, theta, xTrans, yTrans);
+% [distorted, sample, xdata,ydata] = imretrieve(distorted, xTrans, yTrans, scale, theta);
+distorted = im_rst(distorted, 1, x(1), 0, 0);
 
 %Measure similarity of images based on MOMI
 similarityMeasure=momi(original, distorted, 'Normalized');
