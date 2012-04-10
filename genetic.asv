@@ -29,12 +29,11 @@ distorted = im_rst(original, scale, theta, xTrans, yTrans);
 
 %Save images, which will be accessed by the GA
 targetFolder = 'Test Data';
-image = 'model4';
+image = 'scene1';
 image = strcat(targetFolder, '\', image);
 imwrite(original, image);
-image = 'scene4';
+image = 'scene1';
 image = strcat(targetFolder, '\', image);
-imwrite(distorted, image);
 
 %Show original and transformed images for comparison, then an overlay
 % figure(1),subplot(2,1,1),imshow(original),title('Original')
