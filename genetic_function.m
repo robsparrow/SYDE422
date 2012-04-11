@@ -17,7 +17,7 @@ yTrans = 0; %x(4); %y translation defined in pixels
 
 %Apply a set of transformations to the distorted image
 % [distorted, sample, xdata,ydata] = imretrieve(distorted, xTrans, yTrans, scale, theta);
-distorted = im_rst(distorted, 1, x(1), 0, 0);
+distorted = im_rst(distorted, 1, theta, 0, 0);
 
 %Measure similarity of images based on MOMI
 similarityMeasure=momi(original, distorted, 'Normalized');
