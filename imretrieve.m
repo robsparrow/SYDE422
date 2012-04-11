@@ -5,7 +5,7 @@
 %===============================================================================
  
 %-------------------------------------------------------------------------------
-% Part X: Image retreival and manipulation
+% Section Title: Image retreival and manipulation
 % This function retreives an image specified and applys some set of affine 
 % transformations to the image. It returns the distorted image and new x
 % and y positions for display.

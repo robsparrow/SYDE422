@@ -5,12 +5,12 @@
 %===============================================================================
  
 %-------------------------------------------------------------------------------
-% Part X: Image retreival and manipulation
+% Section Title: Image retreival and manipulation
 % This function retreives an image specified and applys some set of affine 
 % transformations to the image. It returns the distorted image and new x
 % and y positions for display.
 %-------------------------------------------------------------------------------
-function [distorted, sample, xdata, ydata] = imretrieve(img, xTrans, yTrans, scale, theta)
+function [distorted, sample, xdata, ydata] = imretrieve(img, xTrans, yTrans, scale, theta,)
     %Setup a transformation matrix with x and y cooridnate translation
     translationMatrix = zeros(3,3);
     translationMatrix(1,1)=1;
@@ -21,7 +21,7 @@ function [distorted, sample, xdata, ydata] = imretrieve(img, xTrans, yTrans, sca
 
     %Apply all transformations to the image
     tformTranslate = maketform('affine',translationMatrix);
-    [translated xdata ydata]= imtransform(img, tformTranslate);
+    [translated xdata ydata]= imtransform(distorted, tformTranslate);
     distorted = translated;
     if scale ~=0
         scaled = imresize(translated, scale);
@@ -29,7 +29,7 @@ function [distorted, sample, xdata, ydata] = imretrieve(img, xTrans, yTrans, sca
         if theta ~=0
             rotated = imrotate(scaled,theta);
             distorted = rotated;
-        end
+        end    
     elseif theta ~=0
             rotated = imrotate(translated,theta);
             distorted = rotated;
@@ -47,6 +47,10 @@ function [distorted, sample, xdata, ydata] = imretrieve(img, xTrans, yTrans, sca
         if theta ~=0
             rotatedSample = imrotate(scaledSample,theta);
             sample = rotatedSample;
-        end
+        end    
+    elseif theta ~=0
+        rotatedSample = imrotate(transSample,theta);
+        sample = rotatedSample;
     end
+    
 end

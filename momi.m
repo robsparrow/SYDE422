@@ -6,10 +6,9 @@
 %==========================================================================
  
 %--------------------------------------------------------------------------
-% Part X: Maximization of Mutual Information Calculation for Two Images
-
+% Section Title: Maximization of Mutual Information calculation for two
+% images
 % Adapted from: http://www.flash.net/~strider2/matlab.htm
-
 %--------------------------------------------------------------------------
 
 function h = momi(image_1, image_2, method)

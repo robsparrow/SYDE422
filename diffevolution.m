@@ -7,7 +7,7 @@ clear all; clc;
 %===============================================================================
  
 %-------------------------------------------------------------------------------
-% Part 2: Differential Evolution
+% Section Title: Setup and execute the differential evolution algorithm
 %-------------------------------------------------------------------------------
 
 % Load original image
@@ -19,16 +19,42 @@ original = rgb2gray(original);
 
 % Setup transformations
 scale = 1; % % of original image size
-theta = 10; % degree rotation counterclockwise
-yTrans = 20; %y translation defined in pixels
-xTrans = 20; %x translation defined in pixels
+theta = 0; % degree rotation counterclockwise
+xTrans = 0; %x translation defined in pixels
+yTrans = 0; %y translation defined in pixels
+cropWindow = [163 47 143 151]; %Specify crop window if the image is being cropped
 
 %Apply all transformations to the image
-%[distorted, sample, xdata,ydata] = imretrieve(original, xTrans, yTrans, scale, theta);
-distorted = im_rst(original, scale, theta, xTrans, yTrans);
+% distorted = imcrop(original,cropWindow);
+[distorted, sample, xdata,ydata] = imretrieve(original, xTrans, yTrans, scale, theta);
+% distorted = im_rst(original, scale, theta, xTrans, yTrans);
 
-momi=momi(original, distorted, 'Normalized');
+%Save images, which will be accessed by the GA
+targetFolder = 'Test Data';
+image = 'model4.png';
+image = strcat(targetFolder, '\', image);
+imwrite(original, image, 'png');
+image = 'scene4.png';
+image = strcat(targetFolder, '\', image);
+imwrite(distorted, image, 'png');
 
-%Show original and transformed images for comparison, then an overlay
-figure(1),subplot(2,1,1),imshow(original),title('Original')
-subplot(2,1,2),imshow(distorted),title('Distorted')
+% Show original and transformed images for comparison
+% figure(1),subplot(2,1,1),imshow(original),title('Model');
+% subplot(2,1,2),imshow(distorted),title('Scene');
+
+% Specify options related to the performance of the GA
+options=gaoptimset;
+options = gaoptimset('Generations', 2);
+
+%Run the DE
+%(population,# of parameters,step size,crossover probability,itermax,strategy);
+[bestmem,nfeval] = diffevolution_function(20,4,1,0.5,200,1);
+
+%Show the registered scene image based on the GA
+% im_rst(image, scale, angle, x shift, y shift)
+% x1 = scale, x2=angle, x3=x shift, x4=y shift
+% registered = im_rst(distorted, 1, x(2), 0, 0);
+[registered, sample, xdata,ydata] = imretrieve(distorted, 0, 0, 1, theta);
+figure(1),subplot(3,1,1),imshow(original),title('Model');
+subplot(3,1,2),imshow(distorted),title('Scene');
+subplot(3,1,3),imshow(registered),title('Registered Scene');
