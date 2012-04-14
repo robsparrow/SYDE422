@@ -12,7 +12,7 @@
 % in the specified range.
 %--------------------------------------------------------------------------
 
-function options = ga_options(original, distorted)
+function options = ga_options(original, distorted, generations, popSize)
 % Specify options related to the performance of the GA
 transBounds=size(original);
 rangeMatrix = zeros(2,2);
@@ -25,8 +25,8 @@ rangeMatrix(:,2) = [0;transBounds(1)-450];
 % rangeMatrix(:,3) = [80;120]; %Changed to real number in genetic_function
 
 options = gaoptimset('CreationFcn',@int_pop,'MutationFcn',@int_mutation, ...
-    'PopInitRange',rangeMatrix,'Generations',1000, ...
-    'PopulationSize',100, 'PlotFcns', @gaplotbestf);
+    'PopInitRange',rangeMatrix,'Generations',generations, ...
+    'PopulationSize',popSize, 'PlotFcns', @gaplotbestf);
 
 function mutationChildren = int_mutation(parents,options,GenomeLength, ...
     FitnessFcn,state,thisScore,thisPopulation)

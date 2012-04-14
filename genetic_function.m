@@ -38,6 +38,6 @@ imgRegistered = imcrop(imgRegistered,cropWindow);
 %Measure similarity of images based on MI
 %Since GA toolbox needs to minimize, we manipulate MI to achieve this
 similarityMeasure=momi(imgRegistered, original, 'Normalized');
-similarityMeasure=-similarityMeasure*100;
+similarityMeasure=-similarityMeasure*1000;
 
 end
