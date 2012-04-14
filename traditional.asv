@@ -12,12 +12,12 @@ clear all; clc;
 targetFolder = 'Samples';
 original = '4.png';
 original = strcat(targetFolder, '\', original);
-onion = imread(original);
-onion = rgb2gray(onion);
+peppers = imread(original);
+peppers = rgb2gray(peppers);
 rect_peppers = [200 300 200 300];
-peppers = imcrop(onion,rect_peppers);
+onion = imcrop(peppers,rect_peppers);
 
-rect_onion = [111 33 65 58];
+rect_onion = [111 33 85 58];
 rect_peppers = [163 47 143 151];
 sub_onion = imcrop(onion,rect_onion);
 sub_peppers = imcrop(peppers,rect_peppers);

@@ -17,7 +17,7 @@ peppers = rgb2gray(peppers);
 rect_peppers = [200 300 200 300];
 onion = imcrop(peppers,rect_peppers);
 
-rect_onion = [111 33 65 58];
+rect_onion = [111 33 85 58];
 rect_peppers = [163 47 143 151];
 sub_onion = imcrop(onion,rect_onion);
 sub_peppers = imcrop(peppers,rect_peppers);

@@ -12,24 +12,21 @@ clear all; clc;
 
 % Load original image
 targetFolder = 'Samples';
-original = '4.png';
+original = '9.png';
 original = strcat(targetFolder, '\', original);
 original = imread(original);
 original = rgb2gray(original);
 
 % Setup transformations
-scale = 1; % % of original image size
+% Note: pass [0 0 0 0] if the image is not cropped
 theta = 0; % degree rotation counterclockwise
-xTrans = 0; %x translation defined in pixels
-yTrans = 0; %y translation defined in pixels
-cropWindow = [163 47 143 151]; %Specify crop window if the image is being cropped
+scale = 1; %Resizing of image after cropping
+cropWindow = [200 200 300 300]; %Specify crop window of the model ([xmin ymin width height])
 
 %Apply all transformations to the image
-distorted = imcrop(original,cropWindow);
-[distorted, sample, xdata,ydata] = imretrieve(distorted, xTrans, yTrans, scale, theta);
-% distorted = im_rst(original, scale, theta, xTrans, yTrans);
+[distorted] = imprepare(original, theta, cropWindow, scale);
 
-%Save images, which will be accessed by the GA
+%Save images for access later
 targetFolder = 'Test Data';
 image = 'model4.png';
 image = strcat(targetFolder, '\', image);
@@ -38,22 +35,30 @@ image = 'scene4.png';
 image = strcat(targetFolder, '\', image);
 imwrite(distorted, image, 'png');
 
-% Show original and transformed images for comparison
-% figure(1),subplot(2,1,1),imshow(original),title('Model');
-% subplot(2,1,2),imshow(distorted),title('Scene');
-
-% Specify options related to the performance of the GA
-options=gaoptimset;
-options = gaoptimset('Generations', 2);
-
-%Run the GA
-[x fval reason] = ga(@genetic_function, 4, options);
+%Retrieve GA options and run the GA
+options = ga_options(original, distorted);
+fitnessFunction={@genetic_function, original, distorted};
+[x fval reason] = ga(fitnessFunction, 2, options);
 
 %Show the registered scene image based on the GA
-% im_rst(image, scale, angle, x shift, y shift)
-% x1 = scale, x2=angle, x3=x shift, x4=y shift
-% registered = im_rst(distorted, 1, x(2), 0, 0);
-[registered, sample, xdata,ydata] = imretrieve(distorted, 0, 0, 1, theta);
+% x1 = scale, x2=x shift, x3=y shift
+% if theta ~=0
+% 	distorted = imrotate(distorted,-x(1));
+% end
+
+% recovered_scene = uint8(zeros(size(original)));
+% recovered_scene(x(3):cropWindow(4),x(2):cropWindow(3),:) = distorted;
+% 
+% [m,n,p] = size(original);
+% mask = ones(m,n); 
+% i = find(recovered_scene(:,:,1)==0);
+% mask(i) = .2;
+% 
+% % overlay images with transparency
+% figure, imshow(original(:,:,1));
+% hold on;
+% h = imshow(recovered_scene); % overlay
+% set(h,'AlphaData',mask);
+% 
 figure(1),subplot(3,1,1),imshow(original),title('Model');
 subplot(3,1,2),imshow(distorted),title('Scene');
-subplot(3,1,3),imshow(registered),title('Registered Scene');

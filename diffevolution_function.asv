@@ -10,7 +10,7 @@
 % algorithm
 %--------------------------------------------------------------------------
 
-function [bestmem,nfeval] = diffevolution_function(NP,D,F,CR,itermax,strategy)
+function [bestmem,nfeval] = diffevolution_function(NP,D,F,CR,itermax,strategy,original,distorted)
 % Run DE minimization
 %
 % Output arguments:
@@ -78,22 +78,15 @@ if (itermax < 0)
    fprintf(1,'Error! itermax should be > 0\n');
 end
 
-% Load images
-targetFolder = 'Test Data';
-original = 'model4.png';
-original = strcat(targetFolder, '\', original);
-original = imread(original);
-distorted = 'scene4.png';
-distorted = strcat(targetFolder, '\', distorted);
-distorted = imread(distorted);
-
 %-----Initialize population and some arrays-------------------------------
-
+transBounds=size(original);
 pop = zeros(NP,D); %initialize pop to gain speed
-lowbound1  = -3;   % Lower bound for parameters (all parameters treated alike)
-highbound1 = -1;   % Upper bound for parameters (all parameters treated alike)
-lowbound2  = 1;    % Lower bound for parameters (all parameters treated alike)
-highbound2 = 3;    % Upper bound for parameters (all parameters treated alike)
+lowbound1  = 0;   % Lower bound for parameters (all parameters treated alike)
+highbound1 = transBounds(2)-450;   % Upper bound for parameters (all parameters treated alike)
+lowbound2  = 0;    % Lower bound for parameters (all parameters treated alike)
+highbound2 = transBounds(1)-450;    % Upper bound for parameters (all parameters treated alike)
+lowbound3 = .5;
+highbound3=1.5;
 
 %----pop is a matrix of size NPxD. It will be initialized-------------
 %----with random values between highbound and lowbound----------------
@@ -101,6 +94,7 @@ highbound2 = 3;    % Upper bound for parameters (all parameters treated alike)
 for i=1:NP
    pop(i,1) = lowbound1 + rand*(highbound1 - lowbound1);
    pop(i,2) = lowbound2 + rand*(highbound2 - lowbound2);
+%    pop(i,3) = lowbound3 + rand*(highbound3 - lowbound3);
 end
 
 popold    = zeros(size(pop));     % toggle population
@@ -110,18 +104,19 @@ bestmemit = zeros(1,D);           % best population member in iteration
 nfeval    = 0;                    % number of function evaluations
 
 %------Evaluate the best member after initialization----------------------
-%------Objective function is the Rosenbrock saddle------------------------
-%------100*(x2-x1^2)^2+(1-x1)^2.------------------------------------------
 
 ibest   = 1;                      % start with first population member
 
 %------Function that is being evaluated------------------------------------
 %Apply a set of transformations to the distorted image
-% [distorted, sample, xdata, ydata] = imretrieve(distorted, xTrans,...
-%     yTrans, scale, theta);
-[distorted, sample, xdata, ydata] = imretrieve(distorted, pop(ibest,3),...
-    pop(ibest,4), pop(ibest,1), pop(ibest,2));
-val(1)=momi(original, distorted, 'Normalized');
+imgRegistered = distorted; 
+% distorted=imresize(distorted,pop(i,3));
+cropWindow = [pop(ibest,1) pop(ibest,2) 200 200];
+originalSegment = imcrop(original,cropWindow);
+cropWindow = [0 0 200 200];
+imgRegistered = imcrop(imgRegistered,cropWindow);
+similarityMeasure=momi(imgRegistered, originalSegment, 'Normalized');
+val(1)=-similarityMeasure;
 %--------------------------------------------------------------------------
 
 bestval = val(1);                 % best objective function value so far
@@ -130,11 +125,14 @@ for i=2:NP                        % check the remaining members
     
 %------Function that is being evaluated------------------------------------
 %Apply a set of transformations to the distorted image
-% [distorted, sample, xdata, ydata] = imretrieve(distorted, xTrans,...
-%     yTrans, scale, theta);
-[distorted, sample, xdata, ydata] = imretrieve(distorted, pop(i,3),...
-    pop(i,4), pop(i,1), pop(i,2));
-val(i)=momi(original, distorted, 'Normalized');
+imgRegistered = distorted;
+% distorted=imresize(distorted,pop(i,3));
+cropWindow = [pop(i,1) pop(i,2) 200 200];
+originalSegment = imcrop(original,cropWindow);
+cropWindow = [0 0 200 200];
+imgRegistered = imcrop(imgRegistered,cropWindow);
+similarityMeasure=momi(imgRegistered, originalSegment, 'Normalized');
+val(i)=-similarityMeasure;
 %--------------------------------------------------------------------------
 
   nfeval  = nfeval + 1;
@@ -222,11 +220,14 @@ while ((iter < itermax) & (bestval > 1.e-6))
       
 %------Function that is being evaluated------------------------------------
 %Apply a set of transformations to the distorted image
-% [distorted, sample, xdata, ydata] = imretrieve(distorted, xTrans,...
-%     yTrans, scale, theta);
-[distorted, sample, xdata, ydata] = imretrieve(distorted, pop(ui,3),...
-    pop(ui,4), pop(ui,1), pop(ui,2));
-tempval=mi(original, distorted, 'Normalized');
+imgRegistered = distorted; 
+% distorted=imresize(distorted,pop(i,3));
+cropWindow = [pop(i,1) pop(i,2) 200 200];
+originalSegment = imcrop(original,cropWindow);
+cropWindow = [0 0 200 200];
+imgRegistered = imcrop(imgRegistered,cropWindow);
+similarityMeasure=momi(imgRegistered, originalSegment, 'Normalized');
+val(i)=-similarityMeasure;
 %--------------------------------------------------------------------------
 
     nfeval  = nfeval + 1;

@@ -9,35 +9,35 @@
 % Section Title: Function to be optimized in the genetic algorithm
 %--------------------------------------------------------------------------
 
-function similarityMeasure=genetic_function(x)
-
-% Load images
-targetFolder = 'Test Data';
-original = 'model4.png';
-original = strcat(targetFolder, '\', original);
-original = imread(original);
-distorted = 'scene4.png';
-distorted = strcat(targetFolder, '\', distorted);
-distorted = imread(distorted);
+function similarityMeasure=genetic_function(x, original, distorted)
 
 % Setup transformations
-scale = x(1); %x(1); % % of original image size
-theta = x(2); % degree rotation counterclockwise
-xTrans = x(3); %x(3); %x translation defined in pixels
-yTrans = x(4); %x(4); %y translation defined in pixels
+% theta = x(1); % degree rotation counterclockwise
+xTrans = x(1); %x translation defined in pixels
+yTrans = x(2); %y translation defined in pixels
+% scale = x(3)/100; %image scale (divide by 10 because GA returns ints)
+imgRegistered = distorted; 
 
-%Apply a set of transformations to the distorted image
-[distorted, sample, xdata,ydata] = imretrieve(distorted, xTrans,...
-    yTrans, 1, theta);
-% im_rst(image, scale, angle, x shift, y shift)
-% distorted = im_rst(distorted, 1, theta, 0, 0);
+% Apply the rotation to the image
+% if theta ~=0
+% 	imgRegistered = imrotate(imgRegistered,theta);
+% end
+
+% imgRegistered = imresize(imgRegistered,scale);
+
+% Crop the model based on the translation for comparison
+% Crop is small to facilitate performance improvements
+% The window specifies the lower left hand corner of the image, which is
+% the point being moved
+% cropWindow is [xmin ymin width height]
+cropWindow = [xTrans yTrans 200 200];
+original = imcrop(original,cropWindow);
+cropWindow = [0 0 200 200];
+imgRegistered = imcrop(imgRegistered,cropWindow);
 
 %Measure similarity of images based on MI
-similarityMeasure=mi(original, distorted, 'Normalized');
-
-%Measure similarity of images based on
-
-%Singe GA toolbox needs to minimize, we manipulate MI to achieve this
-similarityMeasure=-similarityMeasure;
+%Since GA toolbox needs to minimize, we manipulate MI to achieve this
+similarityMeasure=momi(imgRegistered, original, 'Normalized');
+similarityMeasure=-similarityMeasure*100;
 
 end

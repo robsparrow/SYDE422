@@ -1,28 +1,45 @@
-function similarityMeasure=genetic_function(x)
+%==========================================================================
+% Title: Evolutionary Image Registration for Mosaicing of Remotely Sensed 
+% Images
+% Author: Rob Sparrow, Systes Design Engineering, University of Waterloo
+% April 4th, 2012
+%==========================================================================
+ 
+%--------------------------------------------------------------------------
+% Section Title: Function to be optimized in the genetic algorithm
+%--------------------------------------------------------------------------
 
-% Load images
-targetFolder = 'Test Data';
-original = 'model4.png';
-original = strcat(targetFolder, '\', original);
-original = imread(original);
-distorted = 'scene4.png';
-distorted = strcat(targetFolder, '\', distorted);
-distorted = imread(distorted);
+function similarityMeasure=genetic_function(x, original, distorted)
 
 % Setup transformations
-scale = 0; %x(1); % % of original image size
 theta = x(1); % degree rotation counterclockwise
-xTrans = 0; %x(3); %x translation defined in pixels
-yTrans = 0; %x(4); %y translation defined in pixels
+xTrans = x(2); %x translation defined in pixels
+yTrans = x(3); %y translation defined in pixels
+scale = x(4)/100; %image scale (divide by 10 because GA returns ints)
+imgRegisterd = 
 
-%Apply a set of transformations to the distorted image
-% [distorted, sample, xdata,ydata] = imretrieve(distorted, xTrans, yTrans, scale, theta);
-distorted = im_rst(distorted, 1, theta, 0, 0);
+% Apply the rotation to the image
+if theta ~=0
+	distorted = imrotate(distorted,theta);
+end
 
-%Measure similarity of images based on MOMI
-similarityMeasure=mi(original, distorted);
+if scale ~=0
+	distorted = imresize(distorted,scale);
+end
 
-%Singe GA toolbox needs to minimize, we manipulate MOMI to achieve this
-similarityMeasure=-similarityMeasure;
+% Crop the model based on the translation for comparison
+% Crop is small to facilitate performance improvements
+% The window specifies the lower left hand corner of the image, which is
+% the point being moved
+% cropWindow is [xmin ymin width height]
+cropWindow = [xTrans yTrans 300 300];
+original = imcrop(original,cropWindow);
+cropWindow = [0 0 300 300];
+distorted = imcrop(distorted,cropWindow);
+
+%Measure similarity of images based on MI
+%Since GA toolbox needs to minimize, we manipulate MI to achieve this
+similarityMeasure=momi(distorted, original, 'Normalized');
+similarityMeasure=-similarityMeasure*10^10;
 
 end
