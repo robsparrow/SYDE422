@@ -5,9 +5,9 @@ clear all; clc;
 % Author: Rob Sparrow, Systes Design Engineering, University of Waterloo
 % April 4th, 2012
 %===============================================================================
-
+ 
 %-------------------------------------------------------------------------------
-% Section Title: Setup and execute the genetic algorithm
+% Section Title: Setup and execute the traditional registration function
 %-------------------------------------------------------------------------------
 
 %Col1:Sample reference,2:trial reference,3: Initial xTrans, 4: Initial yTrans
@@ -20,20 +20,17 @@ avgPerformance=zeros(7,3);
 % 5:Recovered xTrans,6:recovered yTrans,7:number of evals,8=xTrans error,
 % 9=yTrans error
 bestPerformance=zeros(7,10);
-
-%Create the matrix of random translation values generated from the command
-%window. Done outside of .m file so same translations applied in each
-%algorithm.
-randTranslations=[13 79; 165 137; 170 9; 191 89; 38 41; 40 96; 103 154; 47 ...
-    199; 8 25; 195 56];
+randTranslations=zeros(10,2);
+randTranslations=[13 79; 165 137; 170 9; 191 89; 38 41; 40 
 
 for i=4:10
     for n=1:10
-        %       Show the image and trial number as sanity check
+        
+%       Show the image and trial number as sanity check
         disp('Sample');
         disp(i);
         disp('Trial');
-        disp(n);
+        disp(n);  
         
         sample=num2str(i);
         trial=num2str(n);
@@ -48,16 +45,15 @@ for i=4:10
         % Note: pass [0 0 0 0] if the image is not cropped
         theta = 0; % degree rotation counterclockwise
         scale = 1; %Resizing of image after cropping
-        xCoord=randTranslations(n,1);
-        yCoord=randTranslations(n,2);
-        windowSize = 300;
-        cropWindow = [xCoord yCoord windowSize windowSize]; %Specify crop window of the model ([xmin ymin width height])
+        xCoord=round(rand()*200);
+        yCoord=round(rand()*200);
+        cropWindow = [xCoord yCoord 300 300]; %Specify crop window of the model ([xmin ymin width height])
         
         %Apply all transformations to the image
         [distorted] = imprepare(original, theta, cropWindow, scale);
         
         %Save images for access later
-        targetFolder = 'Test Data Genetic';
+        targetFolder = 'Test Data Traditional';
         image = 'model';
         image = strcat(targetFolder, '\', image, sample, '-', trial, '.png');
         imwrite(original, image, 'png');
@@ -65,25 +61,21 @@ for i=4:10
         image = strcat(targetFolder, '\', image, sample, '-', trial, '.png');
         imwrite(distorted, image, 'png');
         
-        %Retrieve GA options and run the GA
-        generations=10000;
-        popSize=100;
-        options = ga_options(original, distorted, generations, popSize);
-        fitnessFunction={@genetic_function, original, distorted};
-        [x fval reason] = ga(fitnessFunction, 2, options);
+        %Run the traditional registration algorithm
+        [h,im_matched, theta,I,J]=traditional_function(image1, image2, angle, step,crop);
         
-        xError = abs(x(1)-xCoord)/abs(xCoord);
-        yError = abs(x(2)-yCoord)/abs(yCoord);
+        xError = abs(bestmem(1)-xCoord)/abs(xCoord);
+        yError = abs(bestmem(2)-yCoord)/abs(yCoord);
         
-        % Show the xError and yError to track results as they are generated
+        %       Sow the xError and yError to track results as they are generated
         disp('X Actual');
         disp(xCoord);
         disp('X Recovered');
-        disp(x(1));
+        disp(bestmem(1));
         disp('Y Actual');
         disp(yCoord);
         disp('Y Recovered');
-        disp(x(2));
+        disp(bestmem(2));
         disp('xError');
         disp(xError);
         disp('yError');
@@ -93,24 +85,12 @@ for i=4:10
         performance(i-3,n,2)=n;
         performance(i-3,n,3)=xCoord;
         performance(i-3,n,4)=yCoord;
-        performance(i-3,n,5)=x(1);
-        performance(i-3,n,6)=x(2);
-        performance(i-3,n,7)=generations;
+        performance(i-3,n,5)=bestmem(1);
+        performance(i-3,n,6)=bestmem(2);
+        performance(i-3,n,7)=nfeval;
         performance(i-3,n,8)=xError;
         performance(i-3,n,9)=yError;
-        
-        % Show the scene image extracted and the macthed part of the model
-        im_matched=original(x(1):(x(1)+windowSize-1),x(2):(x(2)+windowSize-1));
-        H.Position=[502 258 259 402];
-        figure(H)
-        subplot(2,1,1)
-        imagesc(distorted)
-        title('Scene')
-        subplot(2,1,2)
-        imagesc(im_matched)
-        title('Matched section of Model')
-        colormap (gray)
-
+             
     end
     %     Write the average performance for the sample to an array
     avgXError=sum(performance(i-3,:,8))/10;
@@ -129,7 +109,7 @@ for i=4:10
     end
     
     %     Write the best performance for all trials using the sample to an
-    %     array
+    %     array    
     bestPerformance(i-3,1)=i;
     bestPerformance(i-3,2)=b;
     bestPerformance(i-3,3)=performance(i-3,b,3);

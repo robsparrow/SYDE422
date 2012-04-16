@@ -81,12 +81,10 @@ end
 %-----Initialize population and some arrays-------------------------------
 transBounds=size(original);
 pop = zeros(NP,D); %initialize pop to gain speed
-lowbound1  = 0;   % Lower bound for parameters (all parameters treated alike)
-highbound1 = transBounds(2)-450;   % Upper bound for parameters (all parameters treated alike)
-lowbound2  = 0;    % Lower bound for parameters (all parameters treated alike)
-highbound2 = transBounds(1)-450;    % Upper bound for parameters (all parameters treated alike)
-lowbound3 = .5;
-highbound3=1.5;
+lowbound1  = 0;   % Lower bound for parameters 
+highbound1 = transBounds(2)-300;   % Upper bound for parameters 
+lowbound2  = 0;    % Lower bound for parameters 
+highbound2 = transBounds(1)-300;    % Upper bound for parameters 
 
 %----pop is a matrix of size NPxD. It will be initialized-------------
 %----with random values between highbound and lowbound----------------

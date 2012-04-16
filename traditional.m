@@ -11,7 +11,7 @@ clear all; clc;
 %-------------------------------------------------------------------------------
 
 %Col1:Sample reference,2:trial reference,3: Initial xTrans, 4: Initial yTrans
-% 5:Recovered xTrans,6:recovered yTrans,7:number of evals,8=xTrans error,
+% 5:Recovered xTrans,6:recovered yTrans,7:value of criterion,8=xTrans error,
 % 9=yTrans error
 performance=zeros(7,10,9);
 % Col1: Sample, 2: average x error, 3: average y error
@@ -20,6 +20,12 @@ avgPerformance=zeros(7,3);
 % 5:Recovered xTrans,6:recovered yTrans,7:number of evals,8=xTrans error,
 % 9=yTrans error
 bestPerformance=zeros(7,10);
+
+%Create the matrix of random translation values generated from the command
+%window. Done outside of .m file so same translations applied in each
+%algorithm.
+randTranslations=[13 79; 165 137; 170 9; 191 89; 38 41; 40 96; 103 154; 47 ...
+    199; 8 25; 195 56];
 
 for i=4:10
     for n=1:10
@@ -43,9 +49,10 @@ for i=4:10
         % Note: pass [0 0 0 0] if the image is not cropped
         theta = 0; % degree rotation counterclockwise
         scale = 1; %Resizing of image after cropping
-        xCoord=round(rand()*200);
-        yCoord=round(rand()*200);
-        cropWindow = [xCoord yCoord 300 300]; %Specify crop window of the model ([xmin ymin width height])
+        xCoord=randTranslations(n,1);
+        yCoord=randTranslations(n,2);
+        windowSize = 300;
+        cropWindow = [xCoord yCoord windowSize windowSize]; %Specify crop window of the model ([xmin ymin width height])
         
         %Apply all transformations to the image
         [distorted] = imprepare(original, theta, cropWindow, scale);
@@ -60,20 +67,23 @@ for i=4:10
         imwrite(distorted, image, 'png');
         
         %Run the traditional registration algorithm
-        [h,im_matched, theta,I,J]=traditional_function(image1, image2, angle, step,crop);
+        %Note: I, J arecoordiantes of top left corrner
+        [h,theta,I,J]=traditional_function(distorted, original, theta);
+        xLL=J;
+        yLL=I;
         
-        xError = abs(bestmem(1)-xCoord)/abs(xCoord);
-        yError = abs(bestmem(2)-yCoord)/abs(yCoord);
+        xError = abs(xLL-xCoord)/abs(xCoord);
+        yError = abs(yLL-yCoord)/abs(yCoord);
         
         %       Sow the xError and yError to track results as they are generated
         disp('X Actual');
         disp(xCoord);
         disp('X Recovered');
-        disp(bestmem(1));
+        disp(xLL);
         disp('Y Actual');
         disp(yCoord);
         disp('Y Recovered');
-        disp(bestmem(2));
+        disp(yLL);
         disp('xError');
         disp(xError);
         disp('yError');
@@ -83,11 +93,23 @@ for i=4:10
         performance(i-3,n,2)=n;
         performance(i-3,n,3)=xCoord;
         performance(i-3,n,4)=yCoord;
-        performance(i-3,n,5)=bestmem(1);
-        performance(i-3,n,6)=bestmem(2);
-        performance(i-3,n,7)=nfeval;
+        performance(i-3,n,5)=xLL;
+        performance(i-3,n,6)=yLL;
+        performance(i-3,n,7)=0;
         performance(i-3,n,8)=xError;
         performance(i-3,n,9)=yError;
+        
+        % Show the scene image extracted and the macthed part of the model
+        im_matched=original(yLL:(yLL+windowSize-1),xLL:(xLL+windowSize-1));
+        H.Position=[502 258 259 402];
+        figure(H)
+        subplot(2,1,1)
+        imagesc(distorted)
+        title('Scene')
+        subplot(2,1,2)
+        imagesc(im_matched)
+        title('Matched section of Model')
+        colormap (gray)
              
     end
     %     Write the average performance for the sample to an array

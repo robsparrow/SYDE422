@@ -80,3 +80,25 @@ for k=1:b
 [K,I,J] = ind2sub(size(h),b);
 
 end
+
+% theta=angle(K);
+% im_rot = imrotate(image2, theta,'bilinear');
+% im_matched=im_rot(I:(I+m-1),J:(J+n-1));
+% H.Position=[232 258 259 402];
+% figure(H)
+% subplot(2,1,1)
+% imagesc(image2)
+% title('Original image 2')
+% subplot(2,1,2)
+% imagesc(im_rot)
+% title('Rotated image 2')
+% colormap (gray)
+% H.Position=[502 258 259 402];
+% figure(H)
+% subplot(2,1,1)
+% imagesc(image1)
+% title('Original image 1')
+% subplot(2,1,2)
+% imagesc(im_matched)
+% title('Matched image 2')
+% colormap (gray)

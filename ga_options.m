@@ -17,12 +17,11 @@ function options = ga_options(original, distorted, generations, popSize)
 transBounds=size(original);
 rangeMatrix = zeros(2,2);
 % rangeMatrix(:,1) = [-20;20];
-% Note the -450 value is to ensure there is enough overlap of the images for
+% Note the -300 value is to ensure there is enough overlap of the images for
 % a comparison based on MI, and to prevent translation falling outside
 % image range
-rangeMatrix(:,1) = [0;transBounds(2)-450];
-rangeMatrix(:,2) = [0;transBounds(1)-450];
-% rangeMatrix(:,3) = [80;120]; %Changed to real number in genetic_function
+rangeMatrix(:,1) = [0;transBounds(2)-300];
+rangeMatrix(:,2) = [0;transBounds(1)-300];
 
 options = gaoptimset('CreationFcn',@int_pop,'MutationFcn',@int_mutation, ...
     'PopInitRange',rangeMatrix,'Generations',generations, ...

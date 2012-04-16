@@ -1,11 +1,16 @@
-function h=joint_h(image_1,image_2)
-% function h=joint_h(image_1,image_2)
-%
-% takes a pair of images of equal size and returns the 2d joint histogram.
-% used for MI calculation
-% 
-% written by http://www.flash.net/~strider2/matlab.htm
+%==========================================================================
+% Title: Evolutionary Image Registration for Mosaicing of Remotely Sensed 
+% Images
+% Author: Rob Sparrow, Systes Design Engineering, University of Waterloo
+% April 4th, 2012
+%==========================================================================
+ 
+%--------------------------------------------------------------------------
+% Section Title: Joint histogram creation for MI claculation
+% Adapted from: http://www.flash.net/~strider2/matlab.htm
+%--------------------------------------------------------------------------
 
+function h=joint_h(image_1,image_2)
 
 rows=size(image_1,1);
 cols=size(image_1,2);
